@@ -51,9 +51,11 @@ public class FarmMainClass {
             System.out.println("3. Check number of resources");
             System.out.println("4. Exit");
             System.out.print("Enter your choice: ");
+            //System.out (check certain resource purchase cost for #)
+            //check resource needed
             int choice = scanner.nextInt();
             scanner.nextLine();  // consume newline left-over
-
+            //add cases
             switch (choice) {
                 case 1:
                     System.out.print("Enter item to add: ");
