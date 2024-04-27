@@ -107,6 +107,7 @@ public class FarmMainClass {
         * This division will give us a number which will tell the percentage of how stocked each resource is and therefore allow 
         * us to prioritize each resource/let the farm know which resources need to be restocked.
         */ 
+        //Fix vv
         double fullStock = 100;
         for (String resourceName : resource.keySet()) {
             double currentStock = resource.get(resourceName);
@@ -143,21 +144,21 @@ public class FarmMainClass {
             int choice = scanner.nextInt();
             scanner.nextLine();  // consume newline left-over
 
-            switch (choice) {
+            switch(choice) {
                 case 1:
-                    System.out.print("Enter resource name: ");
+                    System.out.print("Enter the name of the resource: ");
                     String resourceName = scanner.nextLine();
                     System.out.print("Enter the price of the resource: ");
                     double price = scanner.nextDouble();
                     rNow.put(resourceName, price);
                     break;
                 case 2:
-                    System.out.print("Enter resource name: ");
+                    System.out.print("Enter the name of the resource: ");
                     resourceName = scanner.nextLine();
                     rNow.remove(resourceName);
                     break;
                 case 3:
-                    System.out.print("Enter resource name: ");
+                    System.out.print("Enter the name of the resource: ");
                     resourceName = scanner.nextLine();
                     System.out.print("Enter the new price of the resource: ");
                     price = scanner.nextDouble();
@@ -169,7 +170,7 @@ public class FarmMainClass {
                     }
                     break;
                 case 5:
-                    System.out.print("Enter resource name: ");
+                    System.out.print("Enter the name of the resource: ");
                     resourceName = scanner.nextLine();
                     System.out.print("Enter the new quantity of the resource: ");
                     double quantity = scanner.nextDouble();
@@ -182,32 +183,20 @@ public class FarmMainClass {
                     break;
                 case 7:
                     for (String resource : rNow.keySet()) {
-                        double currentStock = rNow.get(resource);
-                        double importance;
-                        double fullStock = 100;
-                        double currentStockPercentage = currentStock/fullStock;
-                        if (currentStockPercentage < 0.5) {
-                            importance = 100;
-                        } else if (currentStockPercentage >= 0.5 && currentStockPercentage < 0.75) {
-                            importance = 75;
-                        } else if (currentStockPercentage >= 0.75 && currentStockPercentage < 1) {
-                            importance = 50;
-                        } else {
-                            importance = 25;
-                        }
-                        System.out.println(resource + " : " + importance);
+                        System.out.println(resource + " : " + rNow.get(resource));
                     }
                     break;
                 case 8:
-                    double budget = 1000;
-                    double totalCost = 0;
                     for (String resource : rNow.keySet()) {
-                        double currentStock = rNow.get(resource);
-                        double importance;
-                        double fullStock = 100;
-                        double currentStockPercentage = currentStock/fullStock;
-                        if (currentStockPercentage < 0.5) {
-                            importance = 100;
+                        System.out.println(resource + " : " + rNow.get(resource));
+                    }
+                    break;
+                case 0:
+                    scanner.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
             }
             scanner.close();
             System.out.println();
