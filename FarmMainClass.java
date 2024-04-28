@@ -1,96 +1,204 @@
-package social; // could change the importance to a stack
+package social; 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+
 public class FarmMainClass {
-    private String season;
-    private int quantityNeeded;
-    private HashMap<String, Double> resource;
-    private double importance; //1-100
-    private double seasonWeight; // 1.5 for winter, 1.2 for spring, 1 for summer, 1.4 for fall (for example)
-    //create a bag of prices (a dictionary of prices for each resources) x wouldnt work if we need to find the price of a specfic resource. solution: ...
+    private ResizableArrayBag<String> resourceBag;
+    private HashMap<String, Double> resources; //resource name, prices
+    private HashMap<String, Double> resourceQuantityCurrent; //resource name, current quantity
+    private HashMap<String, Double> resourceQuantityNeeded; //resource name, quantity needed
+    private HashMap<String, Double> resourceTotalPrice; //resource name, total price for quantity needed
+    private HashMap<String, Double> resourceImportance; //resource name, importance
+    private LinkedList<String> resourcePriorityList; //list of resources in order of importance
+    private int budget; //total budget
+
     public FarmMainClass() {
-        this.season = "winter";
-        this.quantityNeeded = 0;
-        this.resource = new HashMap<String, Double>();
-        this.resource = null; // or something else
-        this.seasonWeight = (1.5+1.2+1+1.4)/4;
+        this.resources = new HashMap<String, Double>();
+        this.resourceQuantityCurrent = new HashMap<String, Double>();
+        this.resourceQuantityNeeded = new HashMap<String, Double>();
+        this.resourceTotalPrice = new HashMap<String, Double>();
+        this.resourceImportance = new HashMap<String, Double>();
+        this.resourcePriorityList = new LinkedList<String>();
+        this.resourceBag = new ResizableArrayBag<String>();
+        this.budget = 0;
     }
 
-    public FarmMainClass(String season, int quantityNeeded, HashMap<String, Double> resource) {
-        this.season = season;
-        this.quantityNeeded = quantityNeeded;
-        this.resource = resource;
-        this.resource = null; // or something else
-        if(season.equalsIgnoreCase("winter")) {
-            this.seasonWeight = 1.5;
-        } else if(season.equalsIgnoreCase("spring")) {
-            this.seasonWeight = 1.2;
-        } else if(season.equalsIgnoreCase("summer")) {
-            this.seasonWeight = 1;
-        } else if(season.equalsIgnoreCase("fall")) {
-            this.seasonWeight = 1.4;
+    public void addResource(String resourceName, double price, double currentQuantity, double quantityNeeded) {
+        resources.put(resourceName, price);
+        resourceQuantityCurrent.put(resourceName, currentQuantity);
+        resourceQuantityNeeded.put(resourceName, quantityNeeded);
+        calculateTotalPrice(resourceName);
+        calculateImportance(budget);
+        resourceBag.add(resourceName);
+    }
+
+    public void removeResource(String resourceName) {
+        resources.remove(resourceName);
+        resourceQuantityCurrent.remove(resourceName);
+        resourceQuantityNeeded.remove(resourceName);
+        resourceTotalPrice.remove(resourceName);
+        resourceImportance.remove(resourceName);
+        resourceBag.remove(resourceName);
+    }
+
+    public void editResource(String resourceName, double price, double currentQuantity, double quantityNeeded) {
+        resources.put(resourceName, price);
+        resourceQuantityCurrent.put(resourceName, currentQuantity);
+        resourceQuantityNeeded.put(resourceName, quantityNeeded);
+        calculateTotalPrice(resourceName);
+        calculateImportance(budget);
+    }
+
+    public void calculateTotalPrice(String resourceName) {
+        double price = resources.get(resourceName);
+        double quantityNeeded = resourceQuantityNeeded.get(resourceName);
+        double totalPrice = price * quantityNeeded;
+        resourceTotalPrice.put(resourceName, totalPrice);
+    }
+
+    
+
+    public void calculateImportance(double budget) {
+        // Calculate the total purchase cost for each resource
+        Map<String, Double> totalPurchaseCost = new HashMap<>();
+        for (Map.Entry<String, Double> entry : resourceQuantityNeeded.entrySet()) {
+            String resourceName = entry.getKey();
+            double quantityNeeded = entry.getValue();
+            double quantityCurrent = resourceQuantityCurrent.get(resourceName);
+            double price = resources.get(resourceName);
+            double purchaseQuantity = Math.max(0, quantityNeeded - quantityCurrent);
+            totalPurchaseCost.put(resourceName, purchaseQuantity * price);
+        }
+    
+        // Sort resources based on total purchase cost in descending order
+        List<Map.Entry<String, Double>> sortedResources = new ArrayList<>(totalPurchaseCost.entrySet());
+        sortedResources.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+    
+        double remainingBudget = budget;
+        double totalCostWithinBudget = 0;
+        for (Map.Entry<String, Double> entry : sortedResources) {
+            double totalCost = entry.getValue();
+            if (totalCost <= remainingBudget) {
+                totalCostWithinBudget += totalCost;
+                remainingBudget -= totalCost;
+            }
+        }
+    
+        for (Map.Entry<String, Double> entry : sortedResources) {
+            String resourceName = entry.getKey();
+            double totalCost = entry.getValue();
+    
+            double importance;
+            if (totalCost <= budget) {
+                importance = (totalCost / totalCostWithinBudget) * 100;
+            } else {
+                importance = (remainingBudget / totalCost) * 100;
+                remainingBudget = 0;
+            }
+    
+            resourceImportance.put(resourceName, importance);
+        }
+    
+        updateResourcePriorityList();
+    }
+
+    public void updateResourcePriorityList() {
+        resourcePriorityList.clear();
+        resourceImportance.entrySet().stream()
+            .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
+            .forEachOrdered(x -> resourcePriorityList.add(x.getKey()));
+    }
+
+    public void printResources() {
+        for (String resourceName : resources.keySet()) {
+            System.out.println("Resource Name: " + resourceName + ", Price: " + resources.get(resourceName) + ", Current Quantity: " + resourceQuantityCurrent.get(resourceName) + ", Quantity Needed: " + resourceQuantityNeeded.get(resourceName));
         }
     }
-    
-    public List<String> estimateCost(String resourceRequest, int quantityNeeded, HashMap<String, Double> resource, double seasonWeight) {
-        return null;
+
+    public void printResourceTotalPrice() {
+        for (String resourceName : resourceTotalPrice.keySet()) {
+            System.out.println("Resource Name: " + resourceName + ", Total Purchase Price: " + resourceTotalPrice.get(resourceName));
+        }
     }
 
-    public boolean need(HashMap<String, Double> resource) {
-        return importance >= 65;
+    public void printResourcePriorityList() {
+        for (String resourceName : resourcePriorityList) {
+            if(resourceImportance.get(resourceName)>=50){
+                System.out.println("Resource Name: " + resourceName + ", Buying is suggested.");
+            }
+            else{
+                System.out.println("Resource Name: " + resourceName + ", Buying is not suggested.");
+            }
+        }
     }
 
     public static void main(String[] args) {
-        HashMap<String, Double> rNow = new HashMap<String, Double>();
+        FarmMainClass farm = new FarmMainClass();
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("1. Add resource");
             System.out.println("2. Remove a resource");
-            System.out.println("3. Check number of resources");
-            System.out.println("4. Exit");
-            System.out.println("5. Check the price of a resource");
-            System.out.println("6. Set the price of a resource");
+            System.out.println("3. Edit a resource");
+            System.out.println("4. Print all resources");
+            System.out.println("5. Print total price of all resources");
+            System.out.println("6. Print priority list of resources");
+            System.out.println("7. Enter your total budget");
+            System.out.println("0. Exit");
             System.out.print("Enter your choice: ");
-            //System.out (check certain resource purchase cost for #)
-            //check resource needed
             int choice = scanner.nextInt();
             scanner.nextLine();  // consume newline left-over
-            //add cases, change bag lines to the hashmap
-            switch (choice) {
+
+            switch(choice) {
                 case 1:
-                    System.out.print("Enter item to add: ");
-                    String item = scanner.nextLine();
-                    rNow.put(item, 0.0);
+                    System.out.print("Enter the name of the resource: ");
+                    String resourceName = scanner.nextLine();
+                    System.out.print("Enter the price of the resource: ");
+                    double price = scanner.nextDouble();
+                    System.out.print("Enter the current quantity of the resource: ");
+                    double currentQuantity = scanner.nextDouble();
+                    System.out.print("Enter the quantity needed of the resource: ");
+                    double quantityNeeded = scanner.nextDouble();
+                    farm.addResource(resourceName, price, currentQuantity, quantityNeeded);
                     break;
                 case 2:
-                    System.out.print("Enter item to remove: ");
-                    String itemToRemove = scanner.nextLine();
-                    if (rNow.containsKey(itemToRemove)) {
-                        rNow.remove(itemToRemove);
-                        System.out.println("Removed " + itemToRemove);
-                    } else {
-                        System.out.println("Could not find " + itemToRemove);
-                    }
+                    System.out.print("Enter the name of the resource: ");
+                    resourceName = scanner.nextLine();
+                    farm.removeResource(resourceName);
                     break;
                 case 3:
-                    System.out.println("Bag size: " + rNow.size());
+                    System.out.print("Enter the name of the resource: ");
+                    resourceName = scanner.nextLine();
+                    System.out.print("Enter the new price of the resource: ");
+                    price = scanner.nextDouble();
+                    System.out.print("Enter the new current quantity of the resource: ");
+                    currentQuantity = scanner.nextDouble();
+                    System.out.print("Enter the new quantity needed of the resource: ");
+                    quantityNeeded = scanner.nextDouble();
+                    farm.editResource(resourceName, price, currentQuantity, quantityNeeded);
                     break;
                 case 4:
-                    System.out.println("Exiting...");
-                    scanner.close();
-                    return;
+                    farm.printResources();
+                    break;
                 case 5:
-                    System.out.println("Enter the resource you want to check the price for: ");
-                    String resource = scanner.nextLine();
-                    System.out.println("The price for " + resource + " is: " + rNow.get(resource));
+                    farm.printResourceTotalPrice();
                     break;
                 case 6:
-                    System.out.println("Enter the resource you want to set a price for");
-                    String resource1 = scanner.nextLine();
-                    System.out.println("Enter the price for " + resource1 + ": ");
-                    double price = scanner.nextDouble();
-                    rNow.put(resource1, price);
+                    farm.printResourcePriorityList();
+                    break;
+                case 7:
+                    System.out.print("Enter your total budget: ");
+                    int budget = scanner.nextInt();
+                    farm.budget = budget;
+                    farm.calculateImportance(budget);
+                    break;
+                case 0:
+                    scanner.close();
+                    System.exit(0);
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
