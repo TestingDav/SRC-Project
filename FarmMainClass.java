@@ -61,6 +61,8 @@ public class FarmMainClass {
         resourceTotalPrice.put(resourceName, totalPrice);
     }
 
+    
+
     public void calculateImportance(double budget) {
         // Calculate the total purchase cost for each resource
         Map<String, Double> totalPurchaseCost = new HashMap<>();
@@ -126,7 +128,12 @@ public class FarmMainClass {
 
     public void printResourcePriorityList() {
         for (String resourceName : resourcePriorityList) {
-            System.out.println("Resource Name: " + resourceName + ", Importance: " + resourceImportance.get(resourceName));
+            if(resourceImportance.get(resourceName)>=50){
+                System.out.println("Resource Name: " + resourceName + ", Buying is suggested.");
+            }
+            else{
+                System.out.println("Resource Name: " + resourceName + ", Buying is not suggested.");
+            }
         }
     }
 
