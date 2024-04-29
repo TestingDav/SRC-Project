@@ -109,6 +109,16 @@ public class LinkedBagTest {
     }
 
     @Test
+    public void testToArrayString() {
+        BagInterface<String> bag = new LinkedBag<>();
+        bag.add("hat");
+        bag.add("house");
+        bag.add("car");
+        String[] expected = {"car", "house", "hat"};
+        assertArrayEquals(expected, bag.toArray(new String[3]));
+    }
+
+    @Test
     public void testUnion() {
         BagInterface<String> bag1 = new LinkedBag<>();
         bag1.add("car");
