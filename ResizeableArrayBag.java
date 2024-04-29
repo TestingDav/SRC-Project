@@ -142,8 +142,16 @@ public class ResizableArrayBag<T> implements BagInterface<T> {
      * @param anArray The array to store the entries.
      * @return A newly allocated array of strings containing all the entries in the bag. Note: If the bag is empty, the returned array is empty. */
         public String[] toArray(String[] anArray) {
-            for (int i = 0; i < numberOfEntries; i++) {
-                anArray[i] = (String) bag[i];
+            if(anArray.length < numberOfEntries) {
+                anArray = Arrays.copyOf(anArray, numberOfEntries);
+            }
+            else if(anArray.length > numberOfEntries) {
+                anArray[numberOfEntries] = null;
+            }
+            if (numberOfEntries > 0){
+                for (int i = 0; i < numberOfEntries; i++) {
+                    anArray[i] = bag[i].toString();
+                }
             }
         return anArray;
         }   // end toArray
