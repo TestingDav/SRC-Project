@@ -137,6 +137,23 @@ public class ResizableArrayBag<T> implements BagInterface<T> {
         
         return result;
     }   // end toArray
+    public T[] toArray(T[] a) {
+        if (a.length < numberOfEntries) {
+            @SuppressWarnings("unchecked")
+            T[] result = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), numberOfEntries);
+            for (int i = 0; i < numberOfEntries; i++) {
+                result[i] = bag[i];
+            }
+            return result;
+        }
+        for (int i = 0; i < numberOfEntries; i++) {
+            a[i] = bag[i];
+        }
+        if (a.length > numberOfEntries) {
+            a[numberOfEntries] = null;
+        }
+        return a;
+    }   // end toArray(T[] a
 
     /** Retrieves the union of this bag and another bag.
     @param anotherBag The bag to compare to the contents of this bag.
