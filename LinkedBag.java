@@ -173,6 +173,22 @@ public class LinkedBag<T> implements BagInterface<T> {
         return result;
     }   //end toArray
 
+    /** Retrieves all entries that are in this bag as an array of strings.
+     * @param anArray The array to store the entries.
+     * @return A newly allocated array of strings containing all the entries in the bag. Note: If the bag is empty, the returned array is empty. */
+    public String[] toArray(String[] anArray) {
+        @SuppressWarnings("unchecked")
+        String[] result = new String[numberOfEntries]; // Unchecked cast
+        int index = 0;
+        Node currentNode = firstNode;
+        while((index < numberOfEntries) && (currentNode != null)){
+            result[index] = currentNode.getData().toString();
+            index++;
+            currentNode = currentNode.getNextNode();
+        }   //end while
+        return result;
+    }   //end toArray
+
     /** Retrieves the union of this bag and another bag.
     @param anotherBag The bag that is to be added.
     @return A newly allocated array of all the entries in the bag. Note: If the bag is empty, the returned array is empty. */
