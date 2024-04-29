@@ -8,14 +8,14 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class FarmMainClass {
-    private ResizableArrayBag<String> resourceBag;
-    private HashMap<String, Double> resources; //resource name, prices
-    private HashMap<String, Double> resourceQuantityCurrent; //resource name, current quantity
-    private HashMap<String, Double> resourceQuantityNeeded; //resource name, quantity needed
-    private HashMap<String, Double> resourceTotalPrice; //resource name, total price for quantity needed
-    private HashMap<String, Double> resourceImportance; //resource name, importance
-    private LinkedList<String> resourcePriorityList; //list of resources in order of importance
-    private int budget; //total budget
+    public ResizableArrayBag<String> resourceBag;
+    public HashMap<String, Double> resources; //resource name, prices
+    public HashMap<String, Double> resourceQuantityCurrent; //resource name, current quantity
+    public HashMap<String, Double> resourceQuantityNeeded; //resource name, quantity needed
+    public HashMap<String, Double> resourceTotalPrice; //resource name, total price for quantity needed
+    public HashMap<String, Double> resourceImportance; //resource name, importance
+    public LinkedList<String> resourcePriorityList; //list of resources in order of importance
+    public int budget; //total budget
 
     public FarmMainClass() {
         this.resources = new HashMap<String, Double>();
@@ -26,6 +26,14 @@ public class FarmMainClass {
         this.resourcePriorityList = new LinkedList<String>();
         this.resourceBag = new ResizableArrayBag<String>();
         this.budget = 0;
+    }
+    public boolean checkAdd(String resourceName) {
+        for (String resource : resourceBag.toArray(new String[0])) {
+            if (resource.equalsIgnoreCase(resourceName)) {
+                System.out.println("Resource already exists.");
+                return false;
+            }
+        }   return true;
     }
 
     public void addResource(String resourceName, double price, double currentQuantity, double quantityNeeded) {
@@ -44,6 +52,15 @@ public class FarmMainClass {
         resourceTotalPrice.remove(resourceName);
         resourceImportance.remove(resourceName);
         resourceBag.remove(resourceName);
+    }
+
+    public boolean checkEdit(String resourceName) {
+        for (String resource : resourceBag.toArray(new String[0])) {
+            if (!resource.equalsIgnoreCase(resourceName)) {
+                System.out.println("Resource doesn't exist.");
+                return false;
+            }
+        }   return true;
     }
 
     public void editResource(String resourceName, double price, double currentQuantity, double quantityNeeded) {
@@ -134,6 +151,7 @@ public class FarmMainClass {
             else{
                 System.out.println("Resource Name: " + resourceName + ", Buying is not suggested.");
             }
+            System.out.println("Resource Name: " + resourceName + ", Units Needed: " + resourceQuantityNeeded.get(resourceName) + ", Price per Unit: " + resources.get(resourceName) + ", Total Price: " + resourceTotalPrice.get(resourceName));
         }
     }
 
@@ -157,13 +175,15 @@ public class FarmMainClass {
                 case 1:
                     System.out.print("Enter the name of the resource: ");
                     String resourceName = scanner.nextLine();
-                    System.out.print("Enter the price of the resource: ");
-                    double price = scanner.nextDouble();
-                    System.out.print("Enter the current quantity of the resource: ");
-                    double currentQuantity = scanner.nextDouble();
-                    System.out.print("Enter the quantity needed of the resource: ");
-                    double quantityNeeded = scanner.nextDouble();
-                    farm.addResource(resourceName, price, currentQuantity, quantityNeeded);
+                    if (farm.checkAdd(resourceName)){
+                        System.out.print("Enter the price of the resource: ");
+                        double price = scanner.nextDouble();
+                        System.out.print("Enter the current quantity of the resource: ");
+                        double currentQuantity = scanner.nextDouble();
+                        System.out.print("Enter the quantity needed of the resource: ");
+                        double quantityNeeded = scanner.nextDouble();
+                        farm.addResource(resourceName, price, currentQuantity, quantityNeeded);
+                    }
                     break;
                 case 2:
                     System.out.print("Enter the name of the resource: ");
@@ -173,21 +193,36 @@ public class FarmMainClass {
                 case 3:
                     System.out.print("Enter the name of the resource: ");
                     resourceName = scanner.nextLine();
-                    System.out.print("Enter the new price of the resource: ");
-                    price = scanner.nextDouble();
-                    System.out.print("Enter the new current quantity of the resource: ");
-                    currentQuantity = scanner.nextDouble();
-                    System.out.print("Enter the new quantity needed of the resource: ");
-                    quantityNeeded = scanner.nextDouble();
-                    farm.editResource(resourceName, price, currentQuantity, quantityNeeded);
+                    if (farm.checkEdit(resourceName)){
+                        System.out.print("Enter the new price of the resource: ");
+                        double price = scanner.nextDouble();
+                        System.out.print("Enter the new current quantity of the resource: ");
+                        double currentQuantity = scanner.nextDouble();
+                        System.out.print("Enter the new quantity needed of the resource: ");
+                        double quantityNeeded = scanner.nextDouble();
+                        farm.editResource(resourceName, price, currentQuantity, quantityNeeded);
+                    }
                     break;
                 case 4:
+                    if(farm.resources.isEmpty()){
+                        System.out.println("Please add resources first.");
+                        break;
+                    }
                     farm.printResources();
                     break;
                 case 5:
+                    if(farm.resources.isEmpty()){
+                        System.out.println("Please add resources first.");
+                        break;
+                    }
                     farm.printResourceTotalPrice();
                     break;
                 case 6:
+                    if(farm.budget == 0){
+                        System.out.println("Please enter your total budget first.");
+                        break;
+                    }
+                    System.out.println("With your budget of " + farm.budget + ", the following suggestions are: ");
                     farm.printResourcePriorityList();
                     break;
                 case 7:
