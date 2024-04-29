@@ -109,6 +109,22 @@ public class ResizableArrayBagTest{
     }
 
     @Test
+    public void testToArrayInputs() {
+        BagInterface<String> bag = new ResizableArrayBag<>();
+        bag.add("car");
+        bag.add("house");
+        bag.add("hat");
+
+        String[] expected = {"car", "house", "hat"};
+        assertArrayEquals(expected, bag.toArray());
+
+        String[] input = {"apple", "banana", "orange"};
+        bag.toArray(input);
+        String[] expectedWithInput = {"car", "house", "hat"};
+        assertArrayEquals(expectedWithInput, input);
+    }
+
+    @Test
     public void testUnion() {
         BagInterface<String> bag1 = new ResizableArrayBag<>();
         bag1.add("car");
