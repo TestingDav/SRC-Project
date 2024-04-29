@@ -41,6 +41,12 @@ public interface BagInterface<T> {
     is empty, the returned array is empty. */
     public T[] toArray();
 
+    /** Retrieves all entries that are in this bag as an array of strings.
+    @param anArray The array to store the entries.
+    @return A newly allocated array of strings containing all the entries in the bag. Note: If the bag
+    is empty, the returned array is empty. */
+    public String[] toArray(String[] anArray); 
+
     /** Computes the union of this bag and another bag.
     @param anotherBag The bag to be combined with this bag.
     @return A new bag that contains all the elements from this bag and anotherBag. */
