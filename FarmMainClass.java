@@ -112,7 +112,13 @@ public class FarmMainClass {
      */
     public void calculateTotalPrice(String resourceName) {
         double price = resources.get(resourceName);
-        double quantityNeeded = resourceQuantityNeeded.get(resourceName);
+        double quantityNeeded;
+        double quantityNeedCheck = resourceQuantityNeeded.get(resourceName) - resourceQuantityCurrent.get(resourceName);
+        if (quantityNeedCheck < 0) {
+            quantityNeeded = 0;
+        }   else {
+            quantityNeeded = quantityNeedCheck;
+        }
         double totalPrice = price * quantityNeeded;
         resourceTotalPrice.put(resourceName, totalPrice);
     }
@@ -197,14 +203,22 @@ public class FarmMainClass {
      * Print the priority list of resources
      */
     public void printResourcePriorityList() {
+        
         for (String resourceName : resourcePriorityList) {
+            double quantityNeeded;
+            double quantityNeedCheck = resourceQuantityNeeded.get(resourceName) - resourceQuantityCurrent.get(resourceName);
+            if (quantityNeedCheck < 0) {
+                quantityNeeded = 0;
+            }   else {
+                quantityNeeded = quantityNeedCheck;
+            }
             if(resourceImportance.get(resourceName)>=50){
                 System.out.println("Resource Name: " + resourceName + ", Buying is suggested.");
             }
             else{
                 System.out.println("Resource Name: " + resourceName + ", Buying is not suggested.");
             }
-            System.out.println("Resource Name: " + resourceName + ", Units Needed: " + resourceQuantityNeeded.get(resourceName) + ", Price per Unit: " + resources.get(resourceName) + ", Total Price: " + resourceTotalPrice.get(resourceName));
+            System.out.println("Resource Name: " + resourceName + ", Units Needed: " + (quantityNeeded) + ", Price per Unit: " + resources.get(resourceName) + ", Total Price: " + resourceTotalPrice.get(resourceName));
         }
     }
 
