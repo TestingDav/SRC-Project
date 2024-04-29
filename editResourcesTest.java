@@ -105,5 +105,48 @@ public class editResourcesTest {
 
                 System.out.println();
                 farm.printResources();
+
+
+                FarmMainClass farm2 = new FarmMainClass();
+                // Annual and recurring costs
+                farm2.addResource("Seed", 1600, 5, 2);
+                farm2.addResource("Equipment rental", 390, 2, 2);
+                farm2.addResource("Tractor", 1200, 1, 2);
+                farm2.addResource("Soil", 1680, 2, 2);
+                farm2.addResource("Drip irrigation", 2000, 1, 2);
+                farm2.addResource("Irrigation", 700, 1, 0);
+
+                // 1/2 acre farm, build from scratch resources
+                farm2.addResource("Hard irrigation", 400, 0, 1);
+                farm2.addResource("Rental", 100, 0, 2);
+                farm2.addResource("Drip irrigation", 1100, 3, 1);
+                farm2.addResource("Tractor", 300, 2, 2);
+                farm2.addResource("Farmers", 3000, 1, 1);
+                farm2.addResource("Soil", 0, 0, 0);
+                farm2.addResource("Seed", 600, 0, 2);
+                farm2.addResource("Container storage", 6000, 5, 4);
+                farm2.addResource("Fence gate", 1000, 3, 4);
+
+                // Animals (recurring yearly maintenance)
+                farm2.addResource("Goats", 1800, 0, 1);
+                farm2.addResource("Chickens", 1200, 3, 0);
+                farm2.addResource("Rabbits", 1200, 2, 1);
+
+                // Print all resources
+                farm2.printResources();
+
+                // Calculate and print the total price for the quantity needed of each resource
+                for (String resource : farm2.resources.keySet()) {
+                        farm2.calculateTotalPrice(resource);
+                        System.out.println("Total price for " + resource + ": " + farm2.resourceTotalPrice.get(resource));
+                }
+
+                // Calculate the importance of each resource based on a budget of 5000
+                farm2.calculateImportance(5000);
+                System.out.println("Should or should not buy each resource based on a budget of 5000: ");
+                for (String resource : farm2.resourceImportance.keySet()) {
+                                boolean shouldBuy = farm2.resourceImportance.get(resource) > 0;
+                                System.out.println(resource + ": " + (shouldBuy ? "Should buy" : "Should not buy"));
+                }
         }
 }
