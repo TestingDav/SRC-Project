@@ -7,4 +7,5 @@
 - **Full name:** [Kristopher Walsh] (https://github.com/walsh0605) kwwalsh@cpp.edu (Method Tests, Proposal, Paper and Slides)
 - **Features** [Junit 4.13.2 - import org.junit.Test import static org.junit.Assert.*] 
 - **GitHub Repo:** [https://github.com/TestingDav/SRC-Project] 
-- **IDE:** VS Code 1.86.2
+- **IDE:** VS Code 1.86.2 - Packages are all defined by 'social' for any other package usage, change the name or comment/delete this first line of code
+
